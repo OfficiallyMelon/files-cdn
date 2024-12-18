@@ -3501,33 +3501,55 @@
                 ));
                 const T = WS().create();
                 S.onMessage(O.j, (S => {
-                    let {damageAmount: K, dir: I, sprinted: z, scalar: R, redVert: O} = S;
-                    V.addCameraShake(K / 40);
-                    const h = x.ents.getMovement(x.playerEntity);
-                    h.isGliding && (h.hitWhilstGliding = !0),
-                    h.isFloating && (h.hitWhilstFloating = !0);
-                    const Y = x.entities.getPhysicsBody(x.playerEntity);
-                    Y.velocity[0] = 0,
-                    Y.velocity[2] = 0,
-                    O && (Y.velocity[1] > 0 && (Y.velocity[1] = 0),
-                    Y._impulses[1] > 0 && (Y._impulses[1] = 0),
-                    x.ents.getMoveState(x.playerEntity).hitInPrevTick = !0);
-                    const u = WS().copy(T, I);
-                    let P = .4;
-                    u[1] > 0 && (P += .1 * u[1]),
-                    u[1] = 0,
-                    0 === I[0] && 0 === I[2] && (I[0] = .01),
-                    WS().normalize(u, u),
-                    u[1] = P;
-                    const y = x.ents.getMovement(x.playerEntity).isInCobweb()
-                      , g = 13 * (z ? 1.3 : 1) * (.9 + .2 * Math.random()) * R * (y ? .1 : 1) * Y.mass;
-                    u[0] *= g,
-                    u[2] *= g;
-                    const M = 15 * (z ? 1.2 : 1) * (.9 + .2 * Math.random()) * R * (y ? .5 : 1) * Y.mass;
-                    u[1] *= M,
-                    Y.applyImpulse(u)
-                }
-                )),
+                    let { damageAmount, dir, sprinted, scalar, redVert } = S;
+                    if (!window.camshake) {
+                        V.addCameraShake(damageAmount / 40);
+                    }
+                
+                    const movementState = x.ents.getMovement(x.playerEntity);
+                    if (movementState.isGliding) movementState.hitWhilstGliding = true;
+                    if (movementState.isFloating) movementState.hitWhilstFloating = true;
+                
+                    const physicsBody = x.entities.getPhysicsBody(x.playerEntity);
+                    physicsBody.velocity[0] = 0;
+                    physicsBody.velocity[2] = 0;
+                
+                    if (redVert) {
+                        if (physicsBody.velocity[1] > 0) physicsBody.velocity[1] = 0;
+                        if (physicsBody._impulses[1] > 0) physicsBody._impulses[1] = 0;
+                        x.ents.getMoveState(x.playerEntity).hitInPrevTick = true;
+                    }
+                
+                    const direction = WS().copy(T, dir);
+                    let verticalComponent = 0.4;
+                    
+                    if (direction[1] > 0) {
+                        verticalComponent += 0.1 * direction[1];
+                    }
+                    
+                    direction[1] = 0;
+                    
+                    if (dir[0] === 0 && dir[2] === 0) {
+                        dir[0] = 0.01;
+                    }
+                
+                    WS().normalize(direction, direction);
+                
+                    direction[1] = verticalComponent;
+                
+                    const inCobweb = x.ents.getMovement(x.playerEntity).isInCobweb();
+                    const gravityFactor = 13 * (sprinted ? 1.3 : 1) * (0.9 + 0.2 * Math.random()) * scalar * (inCobweb ? 0.1 : 1) * physicsBody.mass;
+                
+                    direction[0] *= gravityFactor;
+                    direction[2] *= gravityFactor;
+                
+                    const verticalFactor = 15 * (sprinted ? 1.2 : 1) * (0.9 + 0.2 * Math.random()) * scalar * (inCobweb ? 0.5 : 1) * physicsBody.mass;
+                    direction[1] *= verticalFactor;
+                    if (!window.antiknock) {                
+                        physicsBody.applyImpulse(direction);
+                    }
+                }));
+
                 S.onMessage(O.K, (S => {
                     for (const K of S)
                         (0,
@@ -21925,7 +21947,7 @@
             return !1
         }
         const O = .2
-          , T = [z.blockMetadata["Maple Ladder"].id, z.blockMetadata["Pine Ladder"].id, z.blockMetadata["Plum Ladder"].id, z.blockMetadata["Cedar Ladder"].id, z.blockMetadata["Aspen Ladder"].id, z.blockMetadata["Elm Ladder"].id, z.blockMetadata["Palm Ladder"].id, z.blockMetadata["Pear Ladder"].id, z.blockMetadata["Cherry Ladder"].id, z.blockMetadata.Vines.id, z.blockMetadata["Iron Ladder"].id, z.blockMetadata["Maple Trapdoor"].id, z.blockMetadata["Pine Trapdoor"].id, z.blockMetadata["Plum Trapdoor"].id, z.blockMetadata["Cedar Trapdoor"].id, z.blockMetadata["Aspen Trapdoor"].id, z.blockMetadata["Elm Trapdoor"].id, z.blockMetadata["Palm Trapdoor"].id, z.blockMetadata["Pear Trapdoor"].id, z.blockMetadata["Cherry Trapdoor"].id];
+          , T = [z.blockMetadata["Maple Ladder"].id, z.blockMetadata["Pine Ladder"].id, z.blockMetadata["Plum Ladder"].id, z.blockMetadata["Cedar Ladder"].id, z.blockMetadata["Aspen Ladder"].id, z.blockMetadata["Elm Ladder"].id, z.blockMetadata["Palm Ladder"].id, z.blockMetadata["Pear Ladder"].id, z.blockMetadata["Cherry Ladder"].id, z.blockMetadata.Vines.id, z.blockMetadata["Iron Ladder"].id, z.blockMetadata["Maple Trapdoor"].id, z.blockMetadata["Pine Trapdoor"].id, z.blockMetadata["Plum Trapdoor"].id, z.blockMetadata["Cedar Trapdoor"].id, z.blockMetadata["Aspen Trapdoor"].id, z.blockMetadata["Elm Trapdoor"].id, z.blockMetadata["Palm Trapdoor"].id, z.blockMetadata["Pear Trapdoor"].id, z.blockMetadata["Cherry Trapdoor"].id, z.blockMetadata["Maple Log"]];
         function h(S, K, x) {
             const R = P(S, x, O)
               , V = S.noa.ents.getPosition(K)
