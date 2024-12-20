@@ -8902,8 +8902,12 @@
             tick() {
                 if (window.autoclick) {
                     const {pickDir: U, hitEId: m, meshNodeHit: o} = this.tryHitEntity();
-                    return m ? (this.doAttack(U, m, o), this.breakEntity(U, m)) : null;
+                    if (m) {
+                        this.doAttack(U, m, o);
+                        this.breakEntity(U, m);
+                    }
                 }
+
                 if (this.heldItemState.__id === this.noa.playerEntity) {
                     let U = !1;
                     return this.breaking && (U = this.breakBlock()),
